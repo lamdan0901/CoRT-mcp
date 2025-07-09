@@ -10,6 +10,8 @@ This Node.js MCP server teaches AI agents how to implement the **Chain of Recurs
 - Formatting guidelines
 - Real examples
 
+**Attribution:** This MCP server is inspired by and based on the innovative work from [@PhialsBasement/Chain-of-Recursive-Thoughts](https://github.com/PhialsBasement/Chain-of-Recursive-Thoughts) - "I made my AI think harder by making it argue with itself repeatedly. It works stupidly well."
+
 ## Quick Start
 
 ### 1. Install Dependencies
@@ -30,16 +32,14 @@ chmod +x mcp_server_cort.js
 node mcp_server_cort.js
 ```
 
-### 4. Configure in Claude Desktop
-
-Add to your `claude_desktop_config.json`:
+### 4. Configure in Cursor
 
 ```json
 {
   "mcpServers": {
     "cort-guidance": {
       "command": "node",
-      "args": ["/path/to/your/mcp_server_cort.js"],
+      "args": ["/path/to/your/mcp_server_cort.js"]
     }
   }
 }
