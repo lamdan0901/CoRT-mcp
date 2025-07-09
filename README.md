@@ -20,26 +20,40 @@ This Node.js MCP server teaches AI agents how to implement the **Chain of Recurs
 npm install
 ```
 
-### 2. Make Executable (Unix/Linux/Mac)
-
-```bash
-chmod +x mcp_server_cort.js
-```
-
-### 3. Test the Server
+### 2. Test the Server
 
 ```bash
 node mcp_server_cort.js
 ```
 
-### 4. Configure in Cursor
+### 3. Configure Your IDE
+
+#### For Cursor IDE
+
+1. **Open Settings:** `Ctrl/Cmd + ,` → search for "MCP"
+2. **Add MCP Server** or edit your `settings.json`:
+
+```json
+{
+  "mcp.servers": {
+    "cort-guidance": {
+      "command": "node",
+      "args": ["/absolute/path/to/mcp_server_cort.js"]
+    }
+  }
+}
+```
+
+#### For Claude Desktop
 
 ```json
 {
   "mcpServers": {
     "cort-guidance": {
       "command": "node",
-      "args": ["/path/to/your/mcp_server_cort.js"]
+      "args": ["/path/to/your/mcp_server_cort.js"],
+      "env": {},
+      "disabled": false
     }
   }
 }
@@ -124,6 +138,33 @@ How many rounds of iterative thinking (1-5) would be optimal...?"
 
 **Returns:** Formatting templates for presenting results
 
+## The Core CoRT Logic
+
+Your AI agent learns this 4-step process:
+
+### 1. **Determine Thinking Rounds** (1-5 based on complexity)
+
+```
+Simple questions → 1-2 rounds
+Complex analysis → 3-4 rounds
+Creative problems → 4-5 rounds
+```
+
+### 2. **Generate Initial Response**
+
+Start with a first attempt at answering
+
+### 3. **Iterative Improvement** (Repeat N times)
+
+- Generate 3 alternative approaches
+- Evaluate all options (current + alternatives)
+- Select the best with clear reasoning
+- Use the winner as the new "current best"
+
+### 4. **Present Final Result**
+
+Show the final answer + thinking process
+
 ## How Your AI Agent Uses This
 
 ### Basic Usage Pattern
@@ -182,6 +223,48 @@ const formatTemplate = await mcp.call("format_thinking_process");
 // Agent presents final response using template
 ```
 
+## What This Achieves - The AI Transformation
+
+### Before CoRT:
+
+```
+User: "How do I improve my productivity?"
+AI: "Try time blocking and eliminate distractions."
+```
+
+### After CoRT:
+
+```
+User: "How do I improve my productivity?"
+
+AI: [Calls determine_thinking_rounds] → 3 rounds needed
+     [Generates initial response] → Time blocking approach
+     [Round 1: Creates 3 alternatives] → Energy, GTD, Pomodoro
+     [Evaluates and selects] → Energy management wins
+     [Round 2: Creates 3 alternatives] → Environment, tracking, accountability
+     [Evaluates and selects] → Environmental design wins
+     [Round 3: Refines further] → Final comprehensive system
+
+Final Response: "Here's a comprehensive productivity system based on energy management and environmental design... [detailed response]
+
+## My Thinking Process:
+- Started with basic time blocking
+- Round 1: Pivoted to energy management (more sustainable)
+- Round 2: Added environmental design (addresses root causes)
+- Round 3: Integrated measurement and habits
+- Final result is 3x more comprehensive than initial response"
+```
+
+## The Magic Behind CoRT
+
+This MCP server essentially gives your AI agent the ability to **argue with itself productively**. Instead of giving the first answer that comes to mind, it:
+
+1. **Questions its own responses**
+2. **Generates competing alternatives**
+3. **Evaluates options systematically**
+4. **Iteratively improves through multiple rounds**
+5. **Shows its work transparently**
+
 ## Key Benefits for AI Agents
 
 1. **Structured Learning:** Clear step-by-step methodology
@@ -189,8 +272,18 @@ const formatTemplate = await mcp.call("format_thinking_process");
 3. **Quality Assurance:** Built-in evaluation and selection process
 4. **Transparency:** Clear formatting for showing the thinking process
 5. **Flexibility:** Adjustable rounds and alternatives based on complexity
+6. **Significant Quality Improvement:** Transform quick answers into thoughtful, multi-round analysis
 
 ## Integration Examples
+
+### With Cursor IDE
+
+Once configured, you can use CoRT tools in your conversations:
+
+```
+Tell me about the Chain of Recursive Thoughts methodology
+[Your AI assistant calls get_cort_concept automatically]
+```
 
 ### With Claude Desktop
 
@@ -233,24 +326,131 @@ The MCP provides guidelines for:
 
 ### Common Issues
 
-1. **Node.js Version:** Requires Node.js 18+
-2. **File Permissions:** Make sure the script is executable
-3. **Path Configuration:** Use absolute paths in Claude config
-4. **MCP SDK Version:** Ensure compatible version installed
+**Server won't start?**
 
-### Testing
+- Check Node.js version (needs 18+)
+- Run `npm install` to get dependencies
+- Verify all dependencies are properly installed
+
+**Cursor can't find the server?**
+
+- Verify the path in your `mcp.servers` config is absolute and correct
+- Make sure you restarted Cursor after configuration changes
+- Check that both the `args` path and `cwd` directory exist and are accessible
+- Look for the MCP panel in Cursor's sidebar to check server status
+
+**Claude can't find the server?**
+
+- Verify the path in your config is absolute and correct
+- Make sure you restarted Claude Desktop after config changes
+- Check that the project directory exists and is accessible
+
+**Tools not appearing in your IDE?**
+
+- **Cursor:** Check MCP panel in sidebar, use "MCP: Restart Servers" from Command Palette
+- **Claude:** Confirm the MCP server is listed in Claude's settings
+- Check the console/logs for any error messages
+- Try running the server manually first to confirm it works
+
+### Testing Your Setup
 
 ```bash
 # Test MCP server directly
 echo '{"jsonrpc": "2.0", "id": 1, "method": "tools/list"}' | node mcp_server_cort.js
+
+# Or run the test suite
+node test_mcp_cort.js
 ```
+
+### IDE Configuration Help
+
+#### Cursor IDE Configuration
+
+**Settings Location:**
+
+- Open Cursor → Settings (`Ctrl/Cmd + ,`) → Search "MCP"
+- Or edit `settings.json` directly through Command Palette (`Ctrl/Cmd + Shift + P`)
+
+**Configuration Format:**
+
+```json
+{
+  "mcp.servers": {
+    "cort-guidance": {
+      "command": "node",
+      "args": ["/absolute/path/to/mcp_server_cort.js"],
+      "env": {}
+    }
+  }
+}
+```
+
+**Cursor-specific tips:**
+
+- Use absolute paths for both `args` and `cwd`
+- Restart Cursor after configuration changes
+- Check the MCP panel in Cursor's sidebar to verify connection
+- Use Command Palette → "MCP: Restart Servers" if needed
+
+#### Claude Desktop Configuration
+
+**Find your Claude config file:**
+
+- **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+- **Linux:** `~/.config/Claude/claude_desktop_config.json`
+
+**Configuration Format:**
+
+```json
+{
+  "mcpServers": {
+    "cort-guidance": {
+      "command": "node",
+      "args": ["/path/to/your/mcp_server_cort.js"],
+      "env": {},
+      "disabled": false
+    }
+  }
+}
+```
+
+**Configuration field explanations:**
+
+- `command`: The executable to run (always "node" for Node.js servers)
+- `args`: Array containing the path to your MCP server script
+- `env`: Object for environment variables (can be empty `{}`)
+- `disabled`: Boolean to enable/disable the server (set to `false` to enable)
+
+**Path format examples:**
+
+- **Windows:** `"C:\\Users\\YourName\\path\\to\\mcp_server_cort.js"`
+- **macOS/Linux:** `"/Users/YourName/path/to/mcp_server_cort.js"`
 
 ## Next Steps
 
-1. **Install and Configure:** Set up the MCP server
+1. **Install and Configure:** Set up the MCP server (`npm install` → configure your IDE)
 2. **Test Basic Calls:** Try each tool individually
 3. **Implement in Agent:** Use the workflow in your AI agent
 4. **Customize:** Adapt prompts and processes for your use case
 5. **Monitor Results:** Track improvement in response quality
 
-This MCP server transforms any AI agent into a recursive thinker, significantly improving response quality through systematic self-evaluation and iterative refinement.
+## Quick Start Summary
+
+```bash
+# 1. Install
+npm install
+
+# 2. Test
+node mcp_server_cort.js
+
+# 3. Configure your IDE (Cursor or Claude Desktop) with the path to mcp_server_cort.js
+
+# 4. Tell your agent: "Use the CoRT MCP to learn recursive thinking"
+```
+
+---
+
+**You now have the complete CoRT methodology as a portable MCP server that can teach any AI agent to think recursively!** 🚀
+
+This MCP server transforms any AI agent into a recursive thinker, significantly improving response quality through systematic self-evaluation and iterative refinement. Your agent will evolve from giving quick answers to engaging in thoughtful, multi-round analysis that produces much higher quality responses.
